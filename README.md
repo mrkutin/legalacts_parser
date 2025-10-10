@@ -20,7 +20,7 @@ pip install -r requirements.txt
 python -m playwright install chromium
 ```
 
-### Run
+### Run (Codes)
 ```bash
 python codes_parser.py --output-dir output --headed --max-articles 5
 ```
@@ -37,10 +37,10 @@ Example full crawl (visible browser):
 python codes_parser.py --output-dir output --headed
 ```
 
-### Discovery source
+### Discovery source (Codes)
 Codes are discovered from `https://legalacts.ru/kodeksy/` using the `main-center-block-linkslist-noleft ps-0` container.
 
-### Output format
+### Output format (Codes)
 Each article entry is preceded by its metadata on separate lines, followed by a blank line and the article text.
 
 Example block:
@@ -56,6 +56,27 @@ Example block:
 <article text...>
 ```
 
+### Federal laws parser
+Parses federal laws from `https://legalacts.ru/docs/5/` across all pages and writes all laws into a single file with metadata followed by law text.
+
+Run (Laws):
+```bash
+python laws_parser.py --output-file output/federal_laws.txt --headed --start-page 1 --max-pages 1 --max-laws 3
+```
+
+Options:
+- `--output-file` (default: `output/federal_laws.txt`) destination file for all laws
+- `--headed/--headless` (default: headed)
+- `--start-page` start page number to resume from (default: 1)
+- `--max-pages` limit number of index pages to scan (testing)
+- `--max-laws` limit number of laws to fetch (testing)
+- `--delay-min`/`--delay-max` human-like delays
+
+Law metadata fields:
+- `law_number` (e.g., 297-ФЗ)
+- `law_name`
+- `updated_at` (DD.MM.YYYY)
+
 ### Notes
-- The parser reuses the same tab while walking articles in a code.
+- The parser reuses the same tab while walking items.
 - If blocked, reduce speed, increase delays, and run in `--headed` mode.
