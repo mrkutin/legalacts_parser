@@ -11,6 +11,7 @@ A Playwright-based parser that crawls `https://legalacts.ru/`, discovers all law
 
 ### Requirements
 - Python 3.10+
+ - Qdrant running locally (default: `http://127.0.0.1:6333`)
 
 ### Setup
 ```bash
@@ -80,3 +81,48 @@ Law metadata fields:
 ### Notes
 - The parser reuses the same tab while walking items.
 - If blocked, reduce speed, increase delays, and run in `--headed` mode.
+
+## Qdrant Uploader (HYBRID)
+
+Upload parsed legal codes or laws into Qdrant using dense + sparse (HYBRID) embeddings.
+
+### Additional requirements
+
+Install embeddings and Qdrant clients if not already present:
+
+```bash
+pip install langchain-qdrant langchain-huggingface qdrant-client
+```
+
+Ensure Qdrant is running locally (Docker example):
+
+```bash
+docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant:latest
+```
+
+### Run uploader
+
+```bash
+python qdrant_uploader.py --file output/APK-RF.txt
+```
+
+Options:
+
+- `--file` path to input file or name under `output/` (required)
+- `--collection` overrides collection name (default: input file stem)
+- `--qdrant-url` Qdrant URL (default: `http://127.0.0.1:6333`)
+- `--batch-size` upload batch size (default: 256)
+- `--append` append to existing collection (default: drop & recreate)
+- `--limit` limit number of articles for smoke testing
+
+Examples:
+
+```bash
+python qdrant_uploader.py --file output/SK-RF.txt --collection family_code --batch-size 128
+python qdrant_uploader.py --file output/federal_laws.txt --limit 500
+```
+
+The uploader stores one point per article with the text and metadata fields 
+(`section_number`, `section_name`, `chapter_number`, `chapter_name`, `article_number`, 
+`article_name`, `updated_at` for codes; `law_number`, `law_name`, `updated_at` for laws), 
+and adds `source_file` and a unique `article_uid`.
