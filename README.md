@@ -111,6 +111,7 @@ Options:
 - `--file` path to input file or name under `output/` (required)
 - `--collection` overrides collection name (default: input file stem)
 - `--qdrant-url` Qdrant URL (default: `http://127.0.0.1:6333`)
+- `--qdrant-api-key` Qdrant API key (optional)
 - `--batch-size` upload batch size (default: 256)
 - `--append` append to existing collection (default: drop & recreate)
 - `--limit` limit number of articles for smoke testing
@@ -120,6 +121,8 @@ Examples:
 ```bash
 python qdrant_uploader.py --file output/SK-RF.txt --collection family_code --batch-size 128
 python qdrant_uploader.py --file output/federal_laws.txt --limit 500
+python qdrant_uploader.py --file output/APK-RF.txt --qdrant-url http://127.0.0.1:6333 --qdrant-api-key $QDRANT_API_KEY
+python qdrant_uploader.py --file output/APK-RF.txt --collection my_collection --qdrant-url http://134.122.45.44:6333 --qdrant-api-key PiCOmeOMPant
 ```
 
 The uploader stores one point per article with the text and metadata fields 

@@ -107,6 +107,7 @@ def upload(
     file_path: str,
     collection_name: str,
     qdrant_url: str,
+    qdrant_api_key: str | None,
     batch_size: int,
     append: bool,
     limit: int | None,
@@ -114,7 +115,7 @@ def upload(
     source_file = os.path.basename(file_path)
     file_stem = Path(file_path).stem
 
-    client = QdrantClient(url=qdrant_url)
+    client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
     ensure_collection(client, collection_name, append=append)
 
     dense_embeddings, sparse_embeddings = build_embeddings()
@@ -166,6 +167,7 @@ def upload(
                 embedding=dense_embeddings,
                 sparse_embedding=sparse_embeddings,
                 url=qdrant_url,
+                api_key=qdrant_api_key,
                 collection_name=collection_name,
                 retrieval_mode=RetrievalMode.HYBRID,
                 vector_name="dense",
@@ -187,6 +189,7 @@ def main() -> None:
     parser.add_argument("--file", required=True, help="Path to input file or name under output/")
     parser.add_argument("--collection", default=None, help="Qdrant collection name (default: file name stem)")
     parser.add_argument("--qdrant-url", default="http://127.0.0.1:6333", help="Qdrant URL")
+    parser.add_argument("--qdrant-api-key", default=None, help="Qdrant API key")
     parser.add_argument("--batch-size", type=int, default=256, help="Upload batch size")
     parser.add_argument("--append", action="store_true", help="Append to existing collection instead of dropping it")
     parser.add_argument("--limit", type=int, default=None, help="Limit number of articles to upload (testing)")
@@ -200,6 +203,7 @@ def main() -> None:
         file_path=file_path,
         collection_name=collection_name,
         qdrant_url=args.qdrant_url,
+        qdrant_api_key=args.qdrant_api_key,
         batch_size=args.batch_size,
         append=args.append,
         limit=args.limit,
